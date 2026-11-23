@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Odoo 19 replaced res.groups.category_id (ir.module.category)
+             with privilege_id (res.groups.privilege). A group without a
+             privilege can only be granted from Settings > Technical >
+             Groups, so declare one: the group then shows up on the user
+             form like any other access right. -->
+        <record id="res_groups_privilege_partner_approval" model="res.groups.privilege">
+            <field name="name">Partner Approval</field>
+            <field name="category_id" ref="base.module_category_master_data"/>
+        </record>
+
+        <record id="group_partner_set_to_draft" model="res.groups">
+            <field name="name">Allow Partner Set to Draft</field>
+            <field name="privilege_id" ref="res_groups_privilege_partner_approval"/>
+        </record>
+
+    </data>
+    <data noupdate="1">
+
+        <!-- Odoo 19 renamed res.users.groups_id to group_ids -->
+        <record id="base.user_root" model="res.users">
+            <field name="group_ids" eval="[(4, ref('partner_extension.group_partner_set_to_draft'))]"/>
+        </record>
+
+        <record id="base.user_admin" model="res.users">
+            <field name="group_ids" eval="[(4, ref('partner_extension.group_partner_set_to_draft'))]"/>
+        </record>
+
+    </data>
+</odoo>

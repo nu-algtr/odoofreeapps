@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="seq_vendor_code" model="ir.sequence">
+            <field name="name">Partner Vendor Code</field>
+            <field name="code">partner.vendor.code</field>
+            <field name="prefix">V</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_customer_code" model="ir.sequence">
+            <field name="name">Partner Customer Code</field>
+            <field name="code">partner.customer.code</field>
+            <field name="prefix">C</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Point the configuration at the sequences shipped above so the
+             module works out of the box; Settings can override either one. -->
+        <record id="param_vendor_sequence" model="ir.config_parameter">
+            <field name="key">partner_extension.vendor_sequence</field>
+            <field name="value" eval="ref('partner_extension.seq_vendor_code')"/>
+        </record>
+
+        <record id="param_customer_sequence" model="ir.config_parameter">
+            <field name="key">partner_extension.customer_sequence</field>
+            <field name="value" eval="ref('partner_extension.seq_customer_code')"/>
+        </record>
+
+    </data>
+</odoo>

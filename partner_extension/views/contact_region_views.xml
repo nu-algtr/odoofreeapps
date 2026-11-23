@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_contact_region_list" model="ir.ui.view">
+            <field name="name">contact.region.list</field>
+            <field name="model">contact.region</field>
+            <field name="arch" type="xml">
+                <list string="Contact Region" editable="bottom">
+                    <field name="name"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_contact_region_form" model="ir.ui.view">
+            <field name="name">contact.region.form</field>
+            <field name="model">contact.region</field>
+            <field name="arch" type="xml">
+                <form string="Contact Region">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_contact_region" model="ir.actions.act_window">
+            <field name="name">Contact Region</field>
+            <field name="res_model">contact.region</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <menuitem id="menu_partner_contact_region" name="Contact Regions"
+                  action="action_contact_region"
+                  parent="contacts.res_partner_menu_config" sequence="31"/>
+
+    </data>
+</odoo>

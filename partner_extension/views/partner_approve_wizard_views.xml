@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="partner_approval_form" model="ir.ui.view">
+            <field name="name">partner.approve.button.form</field>
+            <field name="model">partner.approve.button</field>
+            <field name="arch" type="xml">
+                <form string="Approve Partners">
+                    <p>
+                        The selected partners will be approved. Partners that are
+                        already approved are skipped.
+                    </p>
+                    <footer>
+                        <button name="approve_multi_partners" type="object"
+                                string="Confirm Approve Partners" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_partner_approval_button" model="ir.actions.act_window">
+            <field name="name">Approve Partners</field>
+            <field name="res_model">partner.approve.button</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="binding_view_types">list,form</field>
+        </record>
+
+    </data>
+</odoo>

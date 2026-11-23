@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ============================================================
+             Contact form
+             ============================================================ -->
+        <record id="view_partner_form" model="ir.ui.view">
+            <field name="name">res.partner.form.inherit.partner.extension</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+
+                <!-- Approval header -->
+                <xpath expr="//sheet" position="before">
+                    <header>
+                        <button name="button_approve_partner" type="object"
+                                string="Approve Partner" class="oe_highlight"
+                                invisible="not is_button_visible or state == 'approved'"/>
+                        <button name="button_ask_partner_approval" type="object"
+                                string="Ask for Partner Approval" class="oe_highlight"
+                                invisible="is_button_visible or state == 'approved'"/>
+                        <button name="button_draft" type="object" string="Set to Draft"
+                                invisible="not button_visible_draft or state == 'draft'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,approved"/>
+                        <field name="is_button_visible" invisible="1"/>
+                        <field name="button_visible_draft" invisible="1"/>
+                    </header>
+                </xpath>
+
+                <xpath expr="//sheet/widget[@name='web_ribbon']" position="after">
+                    <widget name="web_ribbon" title="Contact" bg_color="text-bg-info"
+                            invisible="not active or not is_child"/>
+                    <widget name="web_ribbon" title="Partner" bg_color="text-bg-success"
+                            invisible="not active or is_child or state != 'approved'"/>
+                    <widget name="web_ribbon" title="Partner" bg_color="text-bg-danger"
+                            invisible="not active or is_child or state == 'approved'"/>
+                </xpath>
+
+                <xpath expr="//div[hasclass('mb8')]//h1" position="after">
+                    <div class="d-flex flex-wrap gap-3">
+                        <div invisible="not is_vendor">
+                            <label for="vendor_code" string="Vendor Code:" class="fw-bold me-1"/>
+                            <field name="vendor_code" class="oe_inline"
+                                   readonly="state == 'approved'"/>
+                        </div>
+                        <div invisible="not is_customer">
+                            <label for="customer_code" string="Customer Code:" class="fw-bold me-1"/>
+                            <field name="customer_code" class="oe_inline"
+                                   readonly="state == 'approved'"/>
+                        </div>
+                        <div invisible="not is_employee">
+                            <label for="employee_code" string="Employee ID:" class="fw-bold me-1"/>
+                            <field name="employee_code" class="oe_inline"
+                                   readonly="state == 'approved'"/>
+                        </div>
+                    </div>
+                </xpath>
+
+                <!-- Commercial data, right column -->
+                <xpath expr="//group/group/field[@name='category_id']" position="after">
+                    <field name="industry_id" invisible="not is_company"
+                           options="{'no_create': True, 'no_create_edit': True}"
+                           readonly="state == 'approved'"/>
+                    <field name="region_id"
+                           options="{'no_create': True, 'no_create_edit': True}"
+                           readonly="state == 'approved'"/>
+                    <field name="customers_vendor_code" readonly="state == 'approved'"/>
+                </xpath>
+
+                <!-- Classification, under Company in the left column. -->
+                <xpath expr="//group/group/div[@colspan='2']" position="after">
+                    <field name="is_child" invisible="1"/>
+                    <field name="is_approved" invisible="1"/>
+                    <field name="is_customer" readonly="state == 'approved'"/>
+                    <field name="is_vendor" readonly="state == 'approved'"/>
+                    <field name="is_employee" invisible="company_type == 'company'"
+                           readonly="state == 'approved'"/>
+                    <field name="type" invisible="is_company"
+                           readonly="user_ids or state == 'approved'"/>
+                </xpath>
+
+                <xpath expr="//group/group/field[@name='function']" position="after">
+                    <field name="title" options="{'no_open': True, 'no_create': True}"
+                           placeholder="e.g. Mister" invisible="is_company"
+                           readonly="state == 'approved'"/>
+                </xpath>
+
+                <!-- Industry now lives beside the tags -->
+                <xpath expr="//page[@name='sales_purchases']//field[@name='industry_id']"
+                       position="replace"/>
+
+                <!-- Purchase tab: Purchase Terms related fields -->
+                <xpath expr="//group[@name='purchase']" position="inside">
+                    <field name="purchase_freight" readonly="state == 'approved'"/>
+                    <field name="purchase_insurance" readonly="state == 'approved'"/>
+                    <field name="purchase_transport_mode" readonly="state == 'approved'"/>
+                    <field name="purchase_term" readonly="state == 'approved'"/>
+                    <field name="purchase_guarantee" readonly="state == 'approved'"/>
+                    <field name="purchase_warranty" readonly="state == 'approved'"/>
+                    <field name="purchase_other_terms" readonly="state == 'approved'"/>
+                    <field name="purchase_terms_conditions" readonly="state == 'approved'"/>
+                    <field name="purchase_remarks" readonly="state == 'approved'"/>
+                </xpath>
+
+                <!-- Contact / address sub-form -->
+                <xpath expr="//field[@name='child_ids']/form//group[@name='other_info']"
+                       position="before">
+                    <group name="partner_extension_dates" invisible="type != 'contact'">
+                        <field name="birth_date"/>
+                        <field name="anniversary_date"/>
+                        <field name="department_id"/>
+                    </group>
+                    <group name="partner_extension_contact">
+                        <field name="fax_no"/>
+                        <field name="region_id"
+                               options="{'no_create': True, 'no_create_edit': True}"/>
+                    </group>
+                </xpath>
+
+                <xpath expr="//page[@name='internal_notes']" position="after">
+                    <page name="about" string="About">
+                        <group>
+                            <group>
+                                <field name="company_revenue" readonly="state == 'approved'"/>
+                            </group>
+                            <group>
+                                <field name="total_employee" readonly="state == 'approved'"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+
+                <!-- Locked once approved -->
+                <xpath expr="//div[hasclass('mb8')]//h1/field[@name='name'][1]"
+                       position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </xpath>
+                <xpath expr="//div[hasclass('mb8')]//h1/field[@name='name'][2]"
+                       position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </xpath>
+                <field name="company_type" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="email" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="phone" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="parent_id" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="street" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="street2" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="city" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="state_id" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="zip" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="country_id" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="function" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="vat" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="website" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="category_id" position="attributes">
+                    <attribute name="options">{'color_field': 'color', 'no_create': True}</attribute>
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="child_ids" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="ref" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="company_registry" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="user_id" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+
+            </field>
+        </record>
+
+        <!-- Readonly accounting properties when approved -->
+        <record id="view_partner_property_form" model="ir.ui.view">
+            <field name="name">res.partner.property.form.inherit.partner.extension</field>
+            <field name="model">res.partner</field>
+            <field name="priority" eval="30"/>
+            <field name="inherit_id" ref="account.view_partner_property_form"/>
+            <field name="arch" type="xml">
+                <field name="property_account_position_id" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="property_account_receivable_id" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+                <field name="property_account_payable_id" position="attributes">
+                    <attribute name="readonly">state == 'approved'</attribute>
+                </field>
+            </field>
+        </record>
+
+        <!-- List and search -->
+        <record id="view_partner_tree" model="ir.ui.view">
+            <field name="name">res.partner.list.inherit.partner.extension</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//list/field[@name='complete_name']" position="before">
+                    <field name="customer_code" optional="show"/>
+                    <field name="vendor_code" optional="show"/>
+                </xpath>
+                <xpath expr="//list/field[@name='user_id']" position="after">
+                    <field name="is_approved" optional="show"/>
+                    <field name="state" optional="hide"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_res_partner_filter" model="ir.ui.view">
+            <field name="name">res.partner.select.inherit.partner.extension</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='type_company']" position="after">
+                    <separator/>
+                    <filter name="is_customer" string="Is Customer"
+                            domain="[('is_customer', '=', True)]"/>
+                    <filter name="is_vendor" string="Is Vendor"
+                            domain="[('is_vendor', '=', True)]"/>
+                    <filter name="is_employee" string="Is Employee"
+                            domain="[('is_employee', '=', True)]"/>
+                    <separator/>
+                    <filter name="is_parent" string="Is Partner (Parent Record)"
+                            domain="[('is_child', '=', False)]"/>
+                    <filter name="is_child" string="Is Contact for Partner"
+                            domain="[('is_child', '=', True)]"/>
+                    <separator/>
+                    <filter name="is_approved" string="Approved Partners"
+                            domain="[('is_approved', '=', True)]"/>
+                    <filter name="to_approve" string="To Approve"
+                            domain="[('state', '=', 'draft')]"/>
+                </xpath>
+                <xpath expr="//group[@name='group_by']" position="inside">
+                    <filter name="group_by_is_approved" string="Approved Partner"
+                            context="{'group_by': 'is_approved'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- res.partner.bank / industry -->
+        <record id="view_partner_bank_form" model="ir.ui.view">
+            <field name="name">res.partner.bank.form.inherit.partner.extension</field>
+            <field name="model">res.partner.bank</field>
+            <field name="inherit_id" ref="base.view_partner_bank_form"/>
+            <field name="arch" type="xml">
+                <field name="acc_number" position="after">
+                    <field name="swift_code"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="res_partner_industry_view_form" model="ir.ui.view">
+            <field name="name">res.partner.industry.form.inherit.partner.extension</field>
+            <field name="model">res.partner.industry</field>
+            <field name="inherit_id" ref="base.res_partner_industry_view_form"/>
+            <field name="arch" type="xml">
+                <field name="name" position="attributes">
+                    <attribute name="required">True</attribute>
+                </field>
+            </field>
+        </record>
+
+        <record id="res_partner_industry_view_tree" model="ir.ui.view">
+            <field name="name">res.partner.industry.list.inherit.partner.extension</field>
+            <field name="model">res.partner.industry</field>
+            <field name="inherit_id" ref="base.res_partner_industry_view_tree"/>
+            <field name="arch" type="xml">
+                <field name="name" position="attributes">
+                    <attribute name="required">True</attribute>
+                </field>
+            </field>
+        </record>
+
+        <!-- Action contexts -->
+        <record id="contacts.action_contacts" model="ir.actions.act_window">
+            <field name="context">{'default_is_company': True, 'search_default_is_parent': True}</field>
+        </record>
+
+        <record id="account.res_partner_action_customer" model="ir.actions.act_window">
+            <field name="context">{'search_default_customer': 1, 'search_default_is_customer': 1, 'res_partner_search_mode': 'customer', 'default_is_company': True, 'default_customer_rank': 1}</field>
+        </record>
+
+        <record id="account.res_partner_action_supplier" model="ir.actions.act_window">
+            <field name="context">{'search_default_supplier': 1, 'search_default_is_vendor': 1, 'res_partner_search_mode': 'supplier', 'default_is_company': True, 'default_supplier_rank': 1}</field>
+        </record>
+
+    </data>
+</odoo>
