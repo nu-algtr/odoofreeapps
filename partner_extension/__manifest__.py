@@ -28,10 +28,10 @@ Key features
   total employees, purchase terms (freight, insurance, warranty, T&C, ...)
 * SWIFT code on bank accounts
 """,
-    'author': 'NexGen Solutions',
-    'website': 'https://nexgensolutions.odoo.com',
-    'maintainer': 'NexGen Solutions',
-    'support': 'nexgensolutionsodoo@gmail.com',
+    'author': 'Alligator Infosoft',
+    'website': 'https://alligatorinfosoft.com/',
+    'maintainer': 'Alligator Infosoft',
+    'support': 'sales@alligatorinfosoft.com',
     'license': 'OPL-1',
     'price': 0.0,
     'currency': 'USD',
