@@ -33,7 +33,7 @@ Key features
     'maintainer': 'Alligator Infosoft',
     'support': 'sales@alligatorinfosoft.com',
     'license': 'OPL-1',
-    'price': 0.0,
+    'price': 50.0,
     'currency': 'USD',
     'depends': [
         'base',
